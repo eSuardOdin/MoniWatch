@@ -18,8 +18,8 @@ public partial class Account
     public double AccountBalance { get; set; }
 
     [ForeignKey("MoniId")]
-    [InverseProperty("Accounts")]
-    public virtual Moni Moni { get; set; } = null!;
+    [InverseProperty("Accounts")] // Warning, may need to delete null forgiving
+    public virtual Moni? Moni { get; set; } = null!;
 
     [InverseProperty("Account")]
     public virtual ICollection<Snapshot> Snapshots { get; set; } = new List<Snapshot>();

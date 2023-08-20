@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using MoniWatch.Entities;
-namespace MoniWatch.Api.Controllers;
 using MoniWatch.DataContext;
 
 
+
+namespace MoniWatch.Api.Controllers;
+
 [ApiController]
-[Route("/accounts")]
+[Route("[controller]")]
 public class AccountController : ControllerBase
 {
     private readonly ILogger<AccountController> _logger;
@@ -14,6 +17,11 @@ public class AccountController : ControllerBase
         _logger = logger;
     }
 
+
+    /// <summary>
+    /// Get all accounts in DB
+    /// </summary>
+    /// <returns>An array of accounts</returns>
     [HttpGet(Name = "GetAccounts")]
     public IEnumerable<Account> Get()
     {
@@ -22,9 +30,30 @@ public class AccountController : ControllerBase
             Account[] accounts = db.Accounts.ToArray();
             foreach (var account in accounts)
             {
-                Console.WriteLine($"{account.AccountName} got.");
+                var json = JsonSerializer.Serialize(account);
+                // Console.WriteLine($"{account.AccountName} got.");
+                Console.WriteLine($"{json}");
             }
             return accounts;
+        }
+    }
+
+    
+    [HttpPost(Name = "GetAccounts")]
+    public IActionResult Post([FromBody] Account account)
+    {
+        using (MoniWatchDbContext db = new())
+        {
+            if(account is null)
+            {
+                return BadRequest("Invalid data");
+            }
+            else
+            {
+                db.Add(account);
+                db.SaveChanges();
+                return Ok("Data added in db");
+            }
         }
     }
 }
