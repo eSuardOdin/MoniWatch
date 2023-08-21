@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using MoniWatch.Entities;
 using MoniWatch.DataContext;
@@ -22,38 +23,73 @@ public class AccountController : ControllerBase
     /// Get all accounts in DB
     /// </summary>
     /// <returns>An array of accounts</returns>
-    [HttpGet(Name = "GetAccounts")]
-    public IEnumerable<Account> Get()
+    [HttpGet(Name = "GetAllAccounts")]
+    public async Task<IEnumerable<Account>> GetAll()
     {
         using (MoniWatchDbContext db = new())
         {
-            Account[] accounts = db.Accounts.ToArray();
-            foreach (var account in accounts)
-            {
-                var json = JsonSerializer.Serialize(account);
-                // Console.WriteLine($"{account.AccountName} got.");
-                Console.WriteLine($"{json}");
-            }
+            Account[] accounts = await db.Accounts.ToArrayAsync();
             return accounts;
         }
     }
 
-    
-    [HttpPost(Name = "GetAccounts")]
-    public IActionResult Post([FromBody] Account account)
+    [HttpGet("{id}", Name = "GetAccount")]
+    public async Task<ActionResult<Account>> Get(int id)
     {
         using (MoniWatchDbContext db = new())
         {
-            if(account is null)
+            Account acc = await db.Accounts.FindAsync(id);
+            if (acc is null) 
             {
-                return BadRequest("Invalid data");
+                return NotFound();
             }
             else
             {
-                db.Add(account);
-                db.SaveChanges();
-                return Ok("Data added in db");
+                return Ok(acc);
             }
         }
     }
+
+    
+
+    /// <summary>
+    /// Adds an account to the database
+    /// </summary>
+    /// <param name="account">The account to add (specified as JSON, translated by EF Core</param>
+    /// <returns></returns>
+    [HttpPost(Name = "PostAccount")]
+    public async Task<ActionResult<Account>> Post([FromBody] Account account)
+    {
+        using (MoniWatchDbContext db = new())
+        {
+            db.Accounts.Add(account);
+            await db.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(Get), null, account);
+        }
+    }
 }
+
+
+
+/*
+    Old Sync
+
+    // [HttpPost(Name = "GetAccounts")]
+    // public IActionResult Post([FromBody] Account account)
+    // {
+    //     using (MoniWatchDbContext db = new())
+    //     {
+    //         if(account is null)
+    //         {
+    //             return BadRequest("Invalid data");
+    //         }
+    //         else
+    //         {
+    //             db.Add(account);
+    //             db.SaveChanges();
+    //             return Ok("Data added in db");
+    //         }
+    //     }
+    // }
+*/
