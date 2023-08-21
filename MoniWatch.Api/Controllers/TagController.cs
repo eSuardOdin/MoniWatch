@@ -45,4 +45,36 @@ public class TagController : ControllerBase
             }
         }
     }
+
+    // o-----------o
+    // | GET A TAG |
+    // o-----------o
+    [HttpGet("{id}", Name="GetTag")]
+    public async Task<ActionResult<Tag>> GetTag(int id)
+    {
+        using (MoniWatchDbContext db = new())
+        {
+            Tag tag = await db.Tags.FindAsync(id);
+            if (tag is null)
+            {
+                return NotFound();
+            }
+            return Ok(tag);
+        }
+    }
+
+    // o--------------o
+    // | POST NEW TAG |
+    // o--------------o    
+    [HttpPost(Name="PostTag")]
+    public async Task<ActionResult<Tag>> PostTag(Tag tag)
+    {
+        using (MoniWatchDbContext db = new())
+        {
+            db.Add(tag);
+            await db.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetAllTags), new {id = tag.TagId}, tag);
+        }
+    }
 }
