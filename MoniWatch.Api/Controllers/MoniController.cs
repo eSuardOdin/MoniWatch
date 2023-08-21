@@ -6,7 +6,7 @@ using MoniWatch.DataContext;
 
 
 
-namespace MoniWatch.Api.Controllers
+namespace MoniWatch.Api.Controllers;
 
 [ApiController]
 [Route("moni")]
@@ -19,11 +19,19 @@ public class MoniController : ControllerBase
     }
 
     [HttpGet(Name="GetMoni")]
-    public async Task<IActionResult> GetMoni(int id)
+    public async Task<ActionResult<Moni>> GetMoni(string login)
     {
-        using (MoniDbContext db = new())
+        using (MoniWatchDbContext db = new())
         {
-            
+            Moni moni = await db.Monies.Where(m => m.MoniLogin == login).FirstOrDefaultAsync();
+            if (moni is null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(moni);
+            }
         }
     }
 }
