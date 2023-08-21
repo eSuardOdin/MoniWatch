@@ -27,13 +27,29 @@ public class TransactionController : ControllerBase
     /// Or all transactions from a specific user with URL: /root/transaction?AccountId={id}
     /// </summary>
     /// <param name="accountId">The account to filter transactions with</param>
-    /// <returns></returns>
+    /// <returns>An array of transactions depending on the needs</returns>
     [HttpGet(Name="GetAllTransactions")]
-    public async Task<IEnumerable<Transaction>> GetAllTransactions(int? accountId)
+    public async Task<IEnumerable<Transaction>> GetAllTransactions(int? accountId, int? tagId)
     {
         using (MoniWatchDbContext db = new())
         {
-            return !accountId.HasValue ? await db.Transactions.ToArrayAsync() : await db.Transactions.Where(t => t.AccountId == accountId).ToArrayAsync();
+            // If we want specific tags for a specific user
+            if(accountId.HasValue && tagId.HasValue)
+            {
+                return await db.Transactions.Where(t => t.AccountId == accountId && t.TagId == tagId).ToArrayAsync();
+            }
+            // If we want transactions for a specific user
+            else if(accountId.HasValue)
+            {
+                return await db.Transactions.Where(t => t.AccountId == accountId).ToArrayAsync();
+            }
+            // If we want transactions with a tag but no specific user
+            else if(tagId.HasValue)
+            {
+                return await db.Transactions.Where(t => t.TagId == tagId).ToArrayAsync();
+            }
+            // If we want ALL transactions
+            return await db.Transactions.ToArrayAsync();
         }
     }
 
@@ -66,7 +82,13 @@ public class TransactionController : ControllerBase
 
     // o----------------------o
     // | POST NEW TRANSACTION |
-    // o----------------------o 
+    // o----------------------o
+    /// <summary>
+    /// Posts a new transaction to database</br>
+    /// Update account balance accordingly
+    /// </summary>
+    /// <param name="transaction">The transaction object to add (as a JSON)</param>
+    /// <returns>Created object</returns>
     [HttpPost(Name = "PostTransaction")]
     public async Task<ActionResult<Transaction>> PostTransaction([FromBody]Transaction transaction)
     {
@@ -82,6 +104,7 @@ public class TransactionController : ControllerBase
             {
                 return NotFound("Account not found");
             }
+            // Update account balance
             account.AccountBalance = Math.Round(account.AccountBalance + transaction.TransactionAmount, 2);
             await db.SaveChangesAsync();
 
