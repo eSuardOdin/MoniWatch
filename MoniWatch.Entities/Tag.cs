@@ -17,7 +17,7 @@ public partial class Tag
 
     [ForeignKey("MoniId")]
     [InverseProperty("Tags")]
-    public virtual Moni Moni { get; set; } = null!;
+    public virtual Moni? Moni { get; set; } = null!;
 
     [InverseProperty("Tag")]
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();

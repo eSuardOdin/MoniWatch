@@ -20,5 +20,5 @@ public partial class Snapshot
 
     [ForeignKey("AccountId")]
     [InverseProperty("Snapshots")]
-    public virtual Account Account { get; set; } = null!;
+    public virtual Account? Account { get; set; } = null!;
 }

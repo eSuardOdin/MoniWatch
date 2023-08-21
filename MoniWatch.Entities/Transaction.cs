@@ -24,5 +24,5 @@ public partial class Transaction
 
     [ForeignKey("TagId")]
     [InverseProperty("Transactions")]
-    public virtual Tag Tag { get; set; } = null!;
+    public virtual Tag? Tag { get; set; } = null!;
 }
