@@ -111,4 +111,39 @@ public class TransactionController : ControllerBase
             return CreatedAtAction(nameof(GetTransaction), new {id = transaction.TransactionId}, transaction);
         }
     }
+
+
+    // o--------------------o
+    // | DELETE TRANSACTION |
+    // o--------------------o
+
+    [HttpDelete(Name="DeleteTransaction")]
+    public async Task<ActionResult> DeleteTransaction(int id)
+    {
+        using (MoniWatchDbContext db = new())
+        {
+            Transaction transaction = await db.Transactions.FindAsync(id);
+            if(transaction is null)
+            {
+                return BadRequest("This transaction does not exists");
+            }
+            // Get linked account
+            Account account = db.Accounts.Where(a => a.AccountId == transaction.AccountId).FirstOrDefault();
+            if(account is null)
+            {
+                return BadRequest("This transaction is not linked to any account");
+            }
+            // Change account balance
+            account.AccountBalance = Math.Round(account.AccountBalance - transaction.TransactionAmount, 2);
+            db.Transactions.Remove(transaction);
+            await db.SaveChangesAsync();
+            return Ok($"Deleted {transaction.TransactionName}");
+        }
+    }
+
+
+
+    // DATA UPDATE
+
+
 }

@@ -19,14 +19,14 @@ public class MoniController : ControllerBase
     }
 
     [HttpGet(Name="GetMoni")]
-    public async Task<ActionResult<Moni>> GetMoni(string login)
+    public async Task<ActionResult<Moni>> GetMoni(string moniLogin)
     {
         using (MoniWatchDbContext db = new())
         {
-            Moni moni = await db.Monies.Where(m => m.MoniLogin == login).FirstOrDefaultAsync();
+            Moni moni = await db.Monies.Where(m => m.MoniLogin == moniLogin).FirstOrDefaultAsync();
             if (moni is null)
             {
-                return NotFound();//
+                return NotFound();
             }
             else
             {
