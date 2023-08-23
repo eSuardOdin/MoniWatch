@@ -24,7 +24,7 @@ public class TransactionController : ControllerBase
     // o----------------------o
     /// <summary>
     /// Get all transactions in DB with URL: /root/transaction</br>
-    /// Or all transactions from a specific user with URL: /root/transaction?AccountId={id}
+    /// Or all transactions from a specific user with URL: /root/transaction?accountId={id}
     /// </summary>
     /// <param name="accountId">The account to filter transactions with</param>
     /// <returns>An array of transactions depending on the needs</returns>
@@ -58,7 +58,7 @@ public class TransactionController : ControllerBase
     // | GET UNIQUE TRANSACTION |
     // o------------------------o
     /// <summary>
-    /// Get a transaction with URL: /root/transaction /{id}
+    /// Get a transaction with URL: /root/transaction/{id}
     /// </summary>
     /// <param name="id">The id of transaction to find</param>
     /// <returns>A status code</returns>
@@ -117,6 +117,12 @@ public class TransactionController : ControllerBase
     // | DELETE TRANSACTION |
     // o--------------------o
 
+    /// <summary>
+    /// Deletes a transaction and updates linked account balance </br>
+    /// with URL: /root/transaction?id={id}
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpDelete(Name="DeleteTransaction")]
     public async Task<ActionResult> DeleteTransaction(int id)
     {
@@ -145,5 +151,29 @@ public class TransactionController : ControllerBase
 
     // DATA UPDATE
 
+    [HttpPatch(Name="UpdateTransactionAmount")]
+    public async Task<ActionResult<Transaction>> UpdateTransactionAmount(int id, double newAmount)
+    {
+        using (MoniWatchDbContext db = new())
+        {
+            Transaction transaction = await db.Transactions.FindAsync(id);
+            if(transaction is null)
+            {
+                return BadRequest("This transaction does not exists");
+            }
+            // Get linked account
+            Account account = db.Accounts.Where(a => a.AccountId == transaction.AccountId).FirstOrDefault();
+            if(account is null)
+            {
+                return BadRequest("This transaction is not linked to any account");
+            }
+            // Update
+            account.AccountBalance = Math.Round(account.AccountBalance - (transaction.TransactionAmount - newAmount), 2);
+            transaction.TransactionAmount = newAmount;
+            await db.SaveChangesAsync();
+
+            return Ok($"Transaction '{transaction.TransactionName} modified'");
+        }
+    }
 
 }
