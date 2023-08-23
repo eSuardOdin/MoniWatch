@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Using Include="BCrypt.Net.BCrypt" Alias="BcryptNet" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.10" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />

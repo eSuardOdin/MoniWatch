@@ -34,4 +34,30 @@ public class MoniController : ControllerBase
             }
         }
     }
+
+
+    [HttpPost(Name="PostMoni")]
+    //public void PostMoni([FromBody] Moni moni)
+    public async Task<ActionResult<Moni>> PostMoni([FromBody] Moni moni)
+    {
+        // Pwd encrypt
+        moni.MoniPwd = BcryptNet.HashPassword(moni.MoniPwd);
+        /* Console.WriteLine($"Pass : {moni.MoniPwd}");
+        Console.WriteLine($"Crypted : {hashed}");
+        Console.WriteLine(BcryptNet.Verify(moni.MoniPwd, "$2a$11$d/eripQMuqiA5zkzA3ho7uIq2x6gWq4kykhKglmV3xZ6KJpGkesLC"));
+        Console.WriteLine(BcryptNet.Verify(moni.MoniPwd, hashed));
+        */
+        using (MoniWatchDbContext db = new())
+        {
+            if(moni is null)
+            {
+                return BadRequest("Bad data provided");
+            }
+            db.Monies.Add(moni);
+            await db.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetMoni), new {moniLogin = moni.MoniLogin}, moni);
+
+        } 
+    }
 }
