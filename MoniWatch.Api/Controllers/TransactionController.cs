@@ -25,8 +25,10 @@ public class TransactionController : ControllerBase
     /// <summary>
     /// Get all transactions in DB with URL: /root/transaction</br>
     /// Or all transactions from a specific user with URL: /root/transaction?accountId={id}
+    /// Or all transactions from a specific tag with URL: /root/transaction?tagId={id}
     /// </summary>
     /// <param name="accountId">The account to filter transactions with</param>
+    /// <param name="tagId">The tag to filter transactions with</param>
     /// <returns>An array of transactions depending on the needs</returns>
     [HttpGet(Name="GetAllTransactions")]
     public async Task<IEnumerable<Transaction>> GetAllTransactions(int? accountId, int? tagId)
@@ -116,19 +118,19 @@ public class TransactionController : ControllerBase
     // o--------------------o
     // | DELETE TRANSACTION |
     // o--------------------o
-
     /// <summary>
     /// Deletes a transaction and updates linked account balance </br>
-    /// with URL: /root/transaction?id={id}
+    /// with URL: /root/transaction/DeleteTransaction?id={id}
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="transactionId">Id of the transaction to delete</param>
     /// <returns></returns>
-    [HttpDelete(Name="DeleteTransaction")]
-    public async Task<ActionResult> DeleteTransaction(int id)
+    [HttpDelete]
+    [Route("DeleteTransaction")]
+    public async Task<ActionResult> DeleteTransaction(int transactionId)
     {
         using (MoniWatchDbContext db = new())
         {
-            Transaction transaction = await db.Transactions.FindAsync(id);
+            Transaction transaction = await db.Transactions.FindAsync(transactionId);
             if(transaction is null)
             {
                 return BadRequest("This transaction does not exists");
@@ -151,12 +153,17 @@ public class TransactionController : ControllerBase
 
     // DATA UPDATE
 
-    [HttpPatch(Name="UpdateTransactionAmount")]
-    public async Task<ActionResult<Transaction>> UpdateTransactionAmount(int id, double newAmount)
+
+    // o---------------------------o
+    // | UPDATE TRANSACTION AMOUNT |
+    // o---------------------------o
+    [HttpPatch]
+    [Route("UpdateTransactionAmount")]
+    public async Task<ActionResult<Transaction>> UpdateTransactionAmount(int transactionId, double newAmount)
     {
         using (MoniWatchDbContext db = new())
         {
-            Transaction transaction = await db.Transactions.FindAsync(id);
+            Transaction transaction = await db.Transactions.FindAsync(transactionId);
             if(transaction is null)
             {
                 return BadRequest("This transaction does not exists");
@@ -176,4 +183,56 @@ public class TransactionController : ControllerBase
         }
     }
 
+
+    // o-------------------------o
+    // | UPDATE TRANSACTION NAME |
+    // o-------------------------o
+    [HttpPatch]
+    [Route("UpdateTransactionName")]
+    public async Task<ActionResult<Transaction>> UpdateTransactionName(int transactionId, string newName)
+    {
+        using (MoniWatchDbContext db = new())
+        {
+            Transaction transaction = await db.Transactions.FindAsync(transactionId);
+            if(transaction is null)
+            {
+                return BadRequest("This transaction does not exists");
+            }
+            // Update
+            transaction.TransactionName = newName;
+            await db.SaveChangesAsync();
+
+            return Ok($"Transaction '{transaction.TransactionName} modified'");
+        }
+    }
+
+
+    // o------------------------o
+    // | UPDATE TRANSACTION TAG |
+    // o------------------------o
+    [HttpPatch]
+    [Route("UpdateTransactionTag")]
+    public async Task<ActionResult<Transaction>> UpdateTransactionTag(int transactionId, int newTag, int moniId)
+    {
+        using (MoniWatchDbContext db = new())
+        {
+            Transaction transaction = await db.Transactions.FindAsync(transactionId);
+            if(transaction is null)
+            {
+                return BadRequest("This transaction does not exists");
+            }
+
+            Tag tag = await db.Tags.FindAsync(newTag);
+            // If tag do not exists or is not one owned by user
+            if(tag is null || tag.MoniId != moniId)
+            {
+                return BadRequest("This tag does not exists");
+            }
+            // Update
+            transaction.TagId = newTag;
+            await db.SaveChangesAsync();
+
+            return Ok($"Transaction '{transaction.TransactionName} modified'");
+        }
+    }
 }
