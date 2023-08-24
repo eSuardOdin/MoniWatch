@@ -48,11 +48,13 @@ public class MoniController : ControllerBase
     }
 
     /// <summary>
-    /// Adds a Moni to database with an hashed password
+    /// Adds a Moni to database with an hashed password</br>
+    /// With http POST request on URL: /root/moni/PostMoni
     /// </summary>
     /// <param name="moni">Moni object added, will be passed in request as JSON</param>
     /// <returns>The Moni created</returns>
-    [HttpPost(Name="PostMoni")]
+    [HttpPost]
+    [Route("PostMoni")]
     public async Task<ActionResult<Moni>> PostMoni([FromBody] Moni moni)
     {
         // Pwd encrypt

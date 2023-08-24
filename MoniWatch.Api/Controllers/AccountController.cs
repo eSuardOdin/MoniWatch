@@ -43,7 +43,7 @@ public class AccountController : ControllerBase
     // | GET UNIQUE ACCOUNT |
     // o--------------------o
     /// <summary>
-    /// Get an account with URL: /root/account/{id}
+    /// Get an account with URL: /root/account/GetAccount?accountId={id}
     /// </summary>
     /// <param name="accountId">The id of the account to find</param>
     /// <returns>A status code</returns>
@@ -73,7 +73,7 @@ public class AccountController : ControllerBase
     /// Http POST request </br>
     /// Adds an account to the database with URL: /root/account/PostAccount
     /// </summary>
-    /// <param name="account">The account to add (specified as JSON, translated by EF Core</param>
+    /// <param name="account">The account to add (specified as JSON, translated by EF Core)</param>
     /// <returns>A status code</returns>
     [HttpPost]
     [Route("PostAccount")]
