@@ -24,13 +24,14 @@ public class TransactionController : ControllerBase
     // o----------------------o
     /// <summary>
     /// Get all transactions in DB with URL: /root/transaction</br>
-    /// Or all transactions from a specific user with URL: /root/transaction?accountId={id}
-    /// Or all transactions from a specific tag with URL: /root/transaction?tagId={id}
+    /// Or all transactions from a specific user with URL: /root/transaction/GetAllTransactions?accountId={id}
+    /// Or all transactions from a specific tag with URL: /root/transaction/GetAllTransactions?tagId={id}
     /// </summary>
     /// <param name="accountId">The account to filter transactions with</param>
     /// <param name="tagId">The tag to filter transactions with</param>
     /// <returns>An array of transactions depending on the needs</returns>
-    [HttpGet(Name="GetAllTransactions")]
+    [HttpGet]
+    [Route("GetAllTransactions")]
     public async Task<IEnumerable<Transaction>> GetAllTransactions(int? accountId, int? tagId)
     {
         using (MoniWatchDbContext db = new())
@@ -60,16 +61,17 @@ public class TransactionController : ControllerBase
     // | GET UNIQUE TRANSACTION |
     // o------------------------o
     /// <summary>
-    /// Get a transaction with URL: /root/transaction/{id}
+    /// Get a transaction with URL: /root/transaction/GetTransaction?transactionId={id}
     /// </summary>
-    /// <param name="id">The id of transaction to find</param>
+    /// <param name="transactionId">The id of transaction to find</param>
     /// <returns>A status code</returns>
-    [HttpGet("{id}", Name = "GetTransaction")]
-    public async Task<ActionResult<Transaction>> GetTransaction(int id)
+    [HttpGet]
+    [Route("GetTransaction")]
+    public async Task<ActionResult<Transaction>> GetTransaction(int transactionId)
     {
         using(MoniWatchDbContext db = new())
         {
-            Transaction transaction = await db.Transactions.FindAsync(id);
+            Transaction transaction = await db.Transactions.FindAsync(transactionId);
             if (transaction is null) 
             {
                 return NotFound();
@@ -123,7 +125,7 @@ public class TransactionController : ControllerBase
     /// with URL: /root/transaction/DeleteTransaction?id={id}
     /// </summary>
     /// <param name="transactionId">Id of the transaction to delete</param>
-    /// <returns></returns>
+    /// <returns>A status code</returns>
     [HttpDelete]
     [Route("DeleteTransaction")]
     public async Task<ActionResult> DeleteTransaction(int transactionId)
@@ -187,6 +189,12 @@ public class TransactionController : ControllerBase
     // o-------------------------o
     // | UPDATE TRANSACTION NAME |
     // o-------------------------o
+    /// <summary>
+    /// Updates the name of a transaction
+    /// </summary>
+    /// <param name="transactionId">Id of transaction to change</param>
+    /// <param name="newName">New value to assign</param>
+    /// <returns>A status code</returns>
     [HttpPatch]
     [Route("UpdateTransactionName")]
     public async Task<ActionResult<Transaction>> UpdateTransactionName(int transactionId, string newName)
@@ -210,6 +218,14 @@ public class TransactionController : ControllerBase
     // o------------------------o
     // | UPDATE TRANSACTION TAG |
     // o------------------------o
+    /// <summary>
+    /// Change the tag of a transaction</br>
+    /// Ensure the tag provided is from the user provided and assign it to the transaction
+    /// </summary>
+    /// <param name="transactionId">Id of the transaction to</param>
+    /// <param name="newTag"></param>
+    /// <param name="moniId"></param>
+    /// <returns></returns>
     [HttpPatch]
     [Route("UpdateTransactionTag")]
     public async Task<ActionResult<Transaction>> UpdateTransactionTag(int transactionId, int newTag, int moniId)
