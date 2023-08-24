@@ -49,12 +49,14 @@ public class TagController : ControllerBase
     // o-----------o
     // | GET A TAG |
     // o-----------o
-    [HttpGet("{id}", Name="GetTag")]
-    public async Task<ActionResult<Tag>> GetTag(int id)
+    // [HttpGet("{id}", Name="GetTag")]
+    [HttpGet]
+    [Route("GetTag")]
+    public async Task<ActionResult<Tag>> GetTag(int tagId)
     {
         using (MoniWatchDbContext db = new())
         {
-            Tag tag = await db.Tags.FindAsync(id);
+            Tag tag = await db.Tags.FindAsync(tagId);
             if (tag is null)
             {
                 return NotFound();
@@ -65,8 +67,14 @@ public class TagController : ControllerBase
 
     // o--------------o
     // | POST NEW TAG |
-    // o--------------o    
-    [HttpPost(Name="PostTag")]
+    // o--------------o
+    /// <summary>
+    /// Posts a tag with URL /root/tag/PostTag 
+    /// </summary>
+    /// <param name="tag">Tag to post as a JSON</param>
+    /// <returns>Status code with tag  object created</returns>       
+    [HttpPost]
+    [Route("PostTag")]
     public async Task<ActionResult<Tag>> PostTag(Tag tag)
     {
         using (MoniWatchDbContext db = new())

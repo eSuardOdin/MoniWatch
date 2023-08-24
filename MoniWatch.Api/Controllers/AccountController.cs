@@ -23,12 +23,13 @@ public class AccountController : ControllerBase
     // | GET ALL ACCOUNTS |
     // o------------------o
     /// <summary>
-    /// Get all accounts in DB with URL: /root/account</br>
-    /// Or all accounts from a specific user with URL: /root/account?MoniId={id}
+    /// Get all accounts in DB with URL: /root/account/GetAllAccounts</br>
+    /// Or all accounts from a specific user with URL: /root/account/GetAllAccounts?MoniId={id}
     /// </summary>
     /// <param name="moniId">If specified, the id of account's owner</param>
     /// <returns>An array of accounts</returns>
-    [HttpGet(Name = "GetAllAccounts")]
+    [HttpGet]
+    [Route("GetAllAccounts")]
     public async Task<IEnumerable<Account>> GetAllAccounts(int? moniId)
     {
         using (MoniWatchDbContext db = new())
@@ -44,14 +45,15 @@ public class AccountController : ControllerBase
     /// <summary>
     /// Get an account with URL: /root/account/{id}
     /// </summary>
-    /// <param name="id">The id of the account to find</param>
+    /// <param name="accountId">The id of the account to find</param>
     /// <returns>A status code</returns>
-    [HttpGet("{id}", Name = "GetAccount")]
-    public async Task<ActionResult<Account>> GetAccount(int id)
+    [HttpGet]
+    [Route("GetAccount")]
+    public async Task<ActionResult<Account>> GetAccount(int accountId)
     {
         using (MoniWatchDbContext db = new())
         {
-            Account acc = await db.Accounts.FindAsync(id);
+            Account acc = await db.Accounts.FindAsync(accountId);
             if (acc is null) 
             {
                 return NotFound();
@@ -68,11 +70,13 @@ public class AccountController : ControllerBase
     // | POST NEW ACCOUNT |
     // o------------------o    
     /// <summary>
-    /// Adds an account to the database
+    /// Http POST request </br>
+    /// Adds an account to the database with URL: /root/account/PostAccount
     /// </summary>
     /// <param name="account">The account to add (specified as JSON, translated by EF Core</param>
     /// <returns>A status code</returns>
-    [HttpPost(Name = "PostAccount")]
+    [HttpPost]
+    [Route("PostAccount")]
     public async Task<ActionResult<Account>> PostAccount([FromBody] Account account)
     {
         using (MoniWatchDbContext db = new())
@@ -80,31 +84,8 @@ public class AccountController : ControllerBase
             db.Accounts.Add(account);
             await db.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetAccount), new {id = account.AccountId}, account);
+            return CreatedAtAction(nameof(GetAccount), new {accountId = account.AccountId}, account);
         }
     }
 }
 
-
-
-/*
-    Old Sync
-
-    // [HttpPost(Name = "GetAccounts")]
-    // public IActionResult Post([FromBody] Account account)
-    // {
-    //     using (MoniWatchDbContext db = new())
-    //     {
-    //         if(account is null)
-    //         {
-    //             return BadRequest("Invalid data");
-    //         }
-    //         else
-    //         {
-    //             db.Add(account);
-    //             db.SaveChanges();
-    //             return Ok("Data added in db");
-    //         }
-    //     }
-    // }
-*/

@@ -20,12 +20,14 @@ public class MoniController : ControllerBase
 
 
     /// <summary>
-    /// Returns a Moni with matching login and password
+    /// Returns a Moni with matching login and password</br>
+    /// Route URL: /root/moni/GetMoni?moniLogin={login}&moniPwd={pwd}
     /// </summary>
     /// <param name="moniLogin">The Login to search in db</param>
     /// <param name="moniPwd">Password that will be tested against hashed password in db</param>
     /// <returns>Not found or moni object</returns>
-    [HttpGet(Name="GetMoni")]
+    [HttpGet]
+    [Route("GetMoni")]
     public async Task<ActionResult<Moni>> GetMoni(string moniLogin, string moniPwd)
     {
         using (MoniWatchDbContext db = new())
