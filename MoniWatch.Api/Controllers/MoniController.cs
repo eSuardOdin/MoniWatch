@@ -51,21 +51,11 @@ public class MoniController : ControllerBase
     /// <param name="moni">Moni object added, will be passed in request as JSON</param>
     /// <returns>The Moni created</returns>
     [HttpPost(Name="PostMoni")]
-    public void PostMoni([FromBody] Moni moni)
-    // public async Task<ActionResult<Moni>> PostMoni([FromBody] Moni moni)
+    public async Task<ActionResult<Moni>> PostMoni([FromBody] Moni moni)
     {
         // Pwd encrypt
-        // moni.MoniPwd = BcryptNet.HashPassword(moni.MoniPwd);
-
-
-
-        string hashed = BcryptNet.HashPassword(moni.MoniPwd);
-        Console.WriteLine($"Pass : {moni.MoniPwd}");
-        Console.WriteLine($"Crypted : {hashed}");
-        Console.WriteLine(BcryptNet.Verify(moni.MoniPwd, "$2a$11$d/eripQMuqiA5zkzA3ho7uIq2x6gWq4kykhKglmV3xZ6KJpGkesLC"));
-        Console.WriteLine(BcryptNet.Verify(moni.MoniPwd, hashed));
-       
-        /* using (MoniWatchDbContext db = new())
+        moni.MoniPwd = BcryptNet.HashPassword(moni.MoniPwd);
+        using (MoniWatchDbContext db = new())
         {
             if(moni is null)
             {
@@ -76,6 +66,6 @@ public class MoniController : ControllerBase
 
             return CreatedAtAction(nameof(GetMoni), new {moniLogin = moni.MoniLogin}, moni);
 
-        }  */
+        } 
     }
 }
