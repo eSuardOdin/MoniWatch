@@ -23,7 +23,7 @@ public class TransactionController : ControllerBase
     // | GET ALL TRANSACTIONS |
     // o----------------------o
     /// <summary>
-    /// Get all transactions in DB with URL: /root/transaction</br>
+    /// Get all transactions in DB with URL: /root/transaction/GetAllTransactions</br>
     /// Or all transactions from a specific user with URL: /root/transaction/GetAllTransactions?accountId={id}
     /// Or all transactions from a specific tag with URL: /root/transaction/GetAllTransactions?tagId={id}
     /// </summary>
@@ -93,7 +93,8 @@ public class TransactionController : ControllerBase
     /// </summary>
     /// <param name="transaction">The transaction object to add (as a JSON)</param>
     /// <returns>Created object</returns>
-    [HttpPost(Name = "PostTransaction")]
+    [HttpPost]
+    [Route("PostTransaction")]
     public async Task<ActionResult<Transaction>> PostTransaction([FromBody]Transaction transaction)
     {
         using (MoniWatchDbContext db = new())
@@ -101,7 +102,6 @@ public class TransactionController : ControllerBase
             // Add transaction
             db.Transactions.Add(transaction);
             await db.SaveChangesAsync();
-
             // Get associated account
             Account account = await db.Accounts.FindAsync(transaction.AccountId);
             if (account is null)
@@ -112,7 +112,7 @@ public class TransactionController : ControllerBase
             account.AccountBalance = Math.Round(account.AccountBalance + transaction.TransactionAmount, 2);
             await db.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetTransaction), new {id = transaction.TransactionId}, transaction);
+            return CreatedAtAction(nameof(GetTransaction), new {transactionId = transaction.TransactionId}, transaction);
         }
     }
 
@@ -122,7 +122,7 @@ public class TransactionController : ControllerBase
     // o--------------------o
     /// <summary>
     /// Deletes a transaction and updates linked account balance </br>
-    /// with URL: /root/transaction/DeleteTransaction?id={id}
+    /// with URL: /root/transaction/DeleteTransaction?transactionId={id}
     /// </summary>
     /// <param name="transactionId">Id of the transaction to delete</param>
     /// <returns>A status code</returns>
@@ -159,6 +159,14 @@ public class TransactionController : ControllerBase
     // o---------------------------o
     // | UPDATE TRANSACTION AMOUNT |
     // o---------------------------o
+    /// <summary>
+    /// Update transaction amount with an Http PATCH request</br>
+    /// on URL: /root/transaction/UpdateTransactionAmount?transactionId={id}&newAmout={amount}</br>
+    /// Updates account balance
+    /// </summary>
+    /// <param name="transactionId">Id of the transaction to patch</param>
+    /// <param name="newAmount">Amount of the transaction</param>
+    /// <returns>Status code</returns>
     [HttpPatch]
     [Route("UpdateTransactionAmount")]
     public async Task<ActionResult<Transaction>> UpdateTransactionAmount(int transactionId, double newAmount)
@@ -190,7 +198,8 @@ public class TransactionController : ControllerBase
     // | UPDATE TRANSACTION NAME |
     // o-------------------------o
     /// <summary>
-    /// Updates the name of a transaction
+    /// Update transaction name with an Http PATCH request</br>
+    /// on URL: /root/transaction/UpdateTransactionAmount?transactionId={id}&newName={name}</br>
     /// </summary>
     /// <param name="transactionId">Id of transaction to change</param>
     /// <param name="newName">New value to assign</param>
@@ -240,7 +249,7 @@ public class TransactionController : ControllerBase
 
             Tag tag = await db.Tags.FindAsync(newTag);
             // If tag do not exists or is not one owned by user
-            if(tag is null || tag.MoniId != moniId)
+            if(tag is null || tag.MoniId != moniId)
             {
                 return BadRequest("This tag does not exists");
             }
