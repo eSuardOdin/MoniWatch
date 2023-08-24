@@ -23,12 +23,13 @@ public class TagController : ControllerBase
     // | GET ALL TAGS |
     // o--------------o
     /// <summary>
-    /// Get all tags for a specific user with URL: /root/tag?MoniId={moniId}</br>
-    /// Or all tags with URL: /root/tag
+    /// Get all tags for a specific user with URL: /root/tag/GetAllTags?MoniId={moniId}</br>
+    /// Or all tags with URL: /root/tag/GetAllTags
     /// </summary>
     /// <param name="moniId">The id of tag's owner</param>
     /// <returns>An array of tags</returns>
-    [HttpGet(Name="GetAllTags")]
+    [HttpGet]
+    [Route("GetAllTags")]
     public async Task<IEnumerable<Tag>> GetAllTags(int? moniId)
     {
         using(MoniWatchDbContext db = new())
@@ -49,9 +50,13 @@ public class TagController : ControllerBase
     // o-----------o
     // | GET A TAG |
     // o-----------o
-    // [HttpGet("{id}", Name="GetTag")]
     [HttpGet]
     [Route("GetTag")]
+    /// <summary>
+    /// Get tag for a specific tag with URL: /root/tag/GetTag?TagId={tagId}</br>
+    /// </summary>
+    /// <param name="tagId">Tag's ID</param>
+    /// <returns>An array of tags</returns>
     public async Task<ActionResult<Tag>> GetTag(int tagId)
     {
         using (MoniWatchDbContext db = new())
