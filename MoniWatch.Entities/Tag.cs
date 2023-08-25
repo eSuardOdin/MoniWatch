@@ -15,10 +15,10 @@ public partial class Tag
 
     public int MoniId { get; set; }
 
-    [ForeignKey("MoniId")]
+    /* [ForeignKey("MoniId")]
     [InverseProperty("Tags")]
     public virtual Moni? Moni { get; set; } = null!;
 
     [InverseProperty("Tag")]
-    public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
+    public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>(); */
 }

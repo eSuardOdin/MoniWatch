@@ -15,9 +15,9 @@ public partial class Moni
 
     public string MoniPwd { get; set; } = null!;
 
-    [InverseProperty("Moni")]
+    /* [InverseProperty("Moni")]
     public virtual ICollection<Account> Accounts { get; set; } = new List<Account>();
 
     [InverseProperty("Moni")]
-    public virtual ICollection<Tag> Tags { get; set; } = new List<Tag>();
+    public virtual ICollection<Tag> Tags { get; set; } = new List<Tag>(); */
 }

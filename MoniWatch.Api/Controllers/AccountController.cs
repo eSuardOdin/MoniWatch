@@ -87,5 +87,51 @@ public class AccountController : ControllerBase
             return CreatedAtAction(nameof(GetAccount), new {accountId = account.AccountId}, account);
         }
     }
+
+
+    // o----------------o
+    // | DELETE ACCOUNT |
+    // o----------------o
+    [HttpDelete]
+    [Route("DeleteAccount")]
+    public async Task<ActionResult> DeleteAccount(int accountId)
+    {
+        using (MoniWatchDbContext db = new())
+        {
+            Account acc = await db.Accounts.FindAsync(accountId);
+            if (acc is null)
+            {
+                return BadRequest("Account not found");
+            }
+
+            db.Accounts.Remove(acc);
+            await db.SaveChangesAsync();
+            return Ok($"Deleted {acc.AccountName}");
+        }
+    }
+
+
+    // o---------------o
+    // | PATCH ACCOUNT |
+    // o---------------o
+    [HttpPatch]
+    [Route("UpdateAccountName")]
+    public async Task<ActionResult<Transaction>> UpdateAccountName(string accountName, int accountId)
+    {
+        using (MoniWatchDbContext db = new())
+        {
+            Account acc = await db.Accounts.FindAsync(accountId);
+            if (acc is null)
+            {
+                return BadRequest("Account not found");
+            }
+            acc.AccountName = accountName;
+            db.SaveChangesAsync();
+
+            return Ok($"Account is now named {acc.AccountName}");
+        }
+    } 
+
+
 }
 

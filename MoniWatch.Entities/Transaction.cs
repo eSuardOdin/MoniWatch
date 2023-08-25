@@ -22,7 +22,11 @@ public partial class Transaction
 
     public int TagId { get; set; }
 
-    [ForeignKey("TagId")]
+    /* [ForeignKey("TagId")]
     [InverseProperty("Transactions")]
     public virtual Tag? Tag { get; set; } = null!;
+
+    [ForeignKey("AccountId")]
+    [InverseProperty("Transactions")]
+    public virtual Account? Account{ get; set; } = null!; */
 }

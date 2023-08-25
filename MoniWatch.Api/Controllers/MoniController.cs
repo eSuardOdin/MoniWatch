@@ -19,6 +19,10 @@ public class MoniController : ControllerBase
     }
 
 
+
+    // o----------o
+    // | GET MONI |
+    // o----------o
     /// <summary>
     /// Returns a Moni with matching login and password</br>
     /// Route URL: /root/moni/GetMoni?moniLogin={login}&moniPwd={pwd}
@@ -47,6 +51,10 @@ public class MoniController : ControllerBase
         }
     }
 
+
+    // o-----------o
+    // | POST MONI | 
+    // o-----------o
     /// <summary>
     /// Adds a Moni to database with an hashed password</br>
     /// With http POST request on URL: /root/moni/PostMoni
@@ -72,4 +80,52 @@ public class MoniController : ControllerBase
 
         } 
     }
+
+
+    // o-------------------o
+    // | UPDATE MONI LOGIN |
+    // o-------------------o
+    [HttpPatch]
+    [Route("UpdateMoniLogin")]
+    public async Task<ActionResult<Moni>> UpdateMoniLogin(int moniId, string moniLogin)
+    {
+        using (MoniWatchDbContext db = new())
+        {
+            Moni moni = await db.Monies.FindAsync(moniId);
+            if (moni is null)
+            {
+                return BadRequest("Moni not found");
+            }
+            moni.MoniLogin = moniLogin;
+            await db.SaveChangesAsync();
+            return Ok($"Moni login successfully updated: {moni.MoniLogin}");
+        }
+    }
+
+
+    // o-----------------o
+    // | UPDATE MONI PWD |
+    // o-----------------o
+    [HttpPatch]
+    [Route("UpdateMoniPwd")]
+    public async Task<ActionResult<Moni>> UpdateMoniPwd(int moniId, string moniPwd)
+    {
+        using (MoniWatchDbContext db = new())
+        {
+            Moni moni = await db.Monies.FindAsync(moniId);
+            if (moni is null)
+            {
+                return BadRequest("Moni not found");
+            }
+            // Pwd encrypt
+            moni.MoniPwd = BcryptNet.HashPassword(moniPwd);
+            await db.SaveChangesAsync();
+            return Ok($"Moni password successfully updated: {moni.MoniPwd}");
+        }
+    }
+
+
+    // o-------------o
+    // | DELETE MONI |
+    // o-------------o 
 }

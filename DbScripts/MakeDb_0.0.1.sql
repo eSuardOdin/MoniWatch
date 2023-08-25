@@ -25,14 +25,6 @@ CREATE TABLE "Accounts" (
     FOREIGN KEY("MoniId") REFERENCES "Monies" ("MoniId") ON DELETE CASCADE
 );
 
-CREATE TABLE "Snapshots" (
-    "SnapshotId" 	INTEGER PRIMARY KEY,
-    "AccountId"		INTEGER NOT NULL,
-    "SnapshotDate"	DATE NOT NULL,
-    "SnapshotBalance"	REAL NOT NULL,
-    FOREIGN KEY("AccountId") REFERENCES "Accounts" ("AccountId") ON DELETE CASCADE
-);
-
 CREATE TABLE "Tags" (
     "TagId" 		INTEGER PRIMARY KEY,
     "TagName" 		TEXT NOT NULL,
@@ -47,7 +39,8 @@ CREATE TABLE "Transactions" (
     "TransactionName"   TEXT NOT NULL,
     "TransactionDate"	DATE NOT NULL,
     "TagId"		INTEGER NOT NULL,
-    FOREIGN KEY("TagId") REFERENCES "Tags" ("TagId") ON DELETE CASCADE
+    FOREIGN KEY("TagId") REFERENCES "Tags" ("TagId") ON DELETE CASCADE,
+    FOREIGN KEY("AccountId") REFERENCES "Accounts" ("AccountId") ON DELETE CASCADE
 );
 
 

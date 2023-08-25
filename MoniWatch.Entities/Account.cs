@@ -16,11 +16,14 @@ public partial class Account
     public int MoniId { get; set; }
 
     public double AccountBalance { get; set; }
-
+/*
     [ForeignKey("MoniId")]
     [InverseProperty("Accounts")] // Warning, may need to delete null forgiving
     public virtual Moni? Moni { get; set; } = null!;
 
     [InverseProperty("Account")]
     public virtual ICollection<Snapshot> Snapshots { get; set; } = new List<Snapshot>();
+
+    [InverseProperty("Account")]
+    public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>(); */
 }

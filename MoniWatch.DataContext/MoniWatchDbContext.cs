@@ -20,8 +20,6 @@ public partial class MoniWatchDbContext : DbContext
 
     public virtual DbSet<Moni> Monies { get; set; }
 
-    public virtual DbSet<Snapshot> Snapshots { get; set; }
-
     public virtual DbSet<Tag> Tags { get; set; }
 
     public virtual DbSet<Transaction> Transactions { get; set; }
