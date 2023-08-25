@@ -18,6 +18,18 @@ public class MoniController : ControllerBase
         _logger = logger;
     }
 
+    // o----------------o
+    // | GET ALL MONIES |
+    // o----------------o
+    [HttpGet]
+    [Route("GetAllMonies")]
+    public async Task<IEnumerable<Moni>> GetAllMonies()
+    {
+        using (MoniWatchDbContext db = new())
+        {
+            return await db.Monies.ToArrayAsync();
+        }
+    }
 
 
     // o----------o
@@ -127,5 +139,22 @@ public class MoniController : ControllerBase
 
     // o-------------o
     // | DELETE MONI |
-    // o-------------o 
+    // o-------------o
+    [HttpDelete]
+    [Route("DeleteMoni")]
+    public async Task<ActionResult> DeleteMoni(int moniId)
+    {
+        using (MoniWatchDbContext db = new())
+        {
+            Moni moni = await db.Monies.FindAsync(moniId);
+            if (moni is null)
+            {
+                return BadRequest("No Monies to delete");
+            }
+            db.Monies.Remove(moni);
+            await db.SaveChangesAsync();
+            return Ok($"Moni {moni.MoniLogin} has been deleted");
+        }
+    }
+
 }

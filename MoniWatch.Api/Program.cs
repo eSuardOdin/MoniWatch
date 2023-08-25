@@ -12,20 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers(options => 
 {
-    Console.WriteLine("Default output formatters");
     foreach (IOutputFormatter formatter in options.OutputFormatters)
     {
         OutputFormatter? mediaFormatter = formatter as OutputFormatter;
-        if (mediaFormatter is null)
-        {
-            Console.WriteLine($"    {formatter.GetType().Name}");
-        }
-        else
-        {
-            Console.WriteLine("    {0}, Media types: {1}",
-            arg0: mediaFormatter.GetType().Name,
-            arg1: string.Join(", ", mediaFormatter.SupportedMediaTypes));
-        }
     }
 })
 .AddXmlDataContractSerializerFormatters()
