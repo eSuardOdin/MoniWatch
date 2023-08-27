@@ -58,6 +58,30 @@ public class TransactionController : ControllerBase
     }
 
 
+    // o--------------------------------o
+    // | GET ALL TRANSACTIONS WITH DATE |
+    // o--------------------------------o
+
+    [HttpGet]
+    [Route("GetAllTransactionsWithDate")]
+    public async Task<IEnumerable<Transaction>> GetAllTransactionsWithDate(int accountId, DateTime startDate, DateTime? endDate, bool isAsc = true)
+    {
+        using (MoniWatchDbContext db = new())
+        {
+            var all = await db.Transactions.Where(t => t.AccountId == accountId).ToArrayAsync();
+            if (endDate is null)
+            {
+                return isAsc ? 
+                    all.Where(t => t.TransactionDate >= startDate).OrderBy(t => t.TransactionDate) :
+                    all.Where(t => t.TransactionDate >= startDate).OrderByDescending(t => t.TransactionDate);
+            }
+            return isAsc ? 
+                all.Where(t => t.TransactionDate >= startDate && t.TransactionDate <= endDate).OrderBy(t => t.TransactionDate) :
+                all.Where(t => t.TransactionDate >= startDate && t.TransactionDate <= endDate).OrderByDescending(t => t.TransactionDate);
+        }
+    }
+
+
     // o------------------------o
     // | GET UNIQUE TRANSACTION |
     // o------------------------o
@@ -155,8 +179,6 @@ public class TransactionController : ControllerBase
 
 
     // DATA UPDATE
-
-
     // o---------------------------o
     // | UPDATE TRANSACTION AMOUNT |
     // o---------------------------o
@@ -261,4 +283,27 @@ public class TransactionController : ControllerBase
             return Ok($"Transaction '{transaction.TransactionName} modified'");
         }
     }
+
+    // o-------------------------o
+    // | UPDATE TRANSACTION DATE |
+    // o-------------------------o
+
+    [HttpPatch]
+    [Route("UpdateTransactionDate")]
+    public async Task<ActionResult<Transaction>> UpdateTransactionDate(DateTime transactionDate, int transactionId)
+    {
+        using (MoniWatchDbContext db = new())
+        {
+            Transaction transaction = await db.Transactions.FindAsync(transactionId);
+            if (transaction is null)
+            {
+                return BadRequest ("Transaction not found");
+            }
+            transaction.TransactionDate = transactionDate;
+            await db.SaveChangesAsync();
+
+            return Ok($"Transaction date is now: {transaction.TransactionDate}");
+        }
+    }
+
 }
