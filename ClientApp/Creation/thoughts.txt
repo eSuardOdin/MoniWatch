@@ -1,0 +1,3 @@
+In order to make a valid console app as client consuming my API I need :
+    
+    - A way to display different menus 
