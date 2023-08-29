@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="290" d:DesignHeight="720"
         x:Class="Avaloniapp.MainWindow"
         Title="Avaloniapp">
     <!-- <Button HorizontalAlignment="Center">Calculate</Button> -->
@@ -17,13 +17,13 @@
                 Text="Temperature Converter"
                 ></TextBlock>
         </Border>
-        <Grid ShowGridLines="True" Margin="5"
+        <Grid ShowGridLines="False" Margin="5"
             ColumnDefinitions="120, 100"
             RowDefinitions="Auto, Auto, Auto">
             <Label Grid.Row="0" Grid.Column="0" Margin="10">Celsius</Label>
-            <TextBox Grid.Row="0" Grid.Column="1" Margin="0 5" Text="0"/>
+            <TextBox TextInput="InputEntered" Name="textBoxCelsius" Grid.Row="0" Grid.Column="1" Margin="0 5" Text="0"/>
             <Label Grid.Row="1" Grid.Column="0">Fahrenheit</Label>
-            <TextBox Grid.Row="1" Grid.Column="1" Margin="0 5" Text="0"/>    
+            <TextBox Name="textBoxFahrenheit" IsReadOnly="True" Grid.Row="1" Grid.Column="1" Margin="0 5" Text="0"/>    
             <Button Click="ButtonClicked" Grid.Row="2" Grid.Column="1" Margin="0 5">Calculate</Button>
         </Grid>
         <!-- <Button HorizontalAlignment="Center">Calculate</Button> -->
